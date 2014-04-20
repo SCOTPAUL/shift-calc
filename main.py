@@ -1,5 +1,8 @@
 #!usr/bin/python
 
+#Paul Cowie
+#2014
+
 from Tkinter import *
 
 
