@@ -8,6 +8,7 @@ today = datetime.date.today()
 
 currentYear = today.year
 currentMonth = today.month
+currentDay = today.day
 
 def daysInMonth(monthDates):
     days = 0
@@ -24,7 +25,6 @@ def init(can, w, h, year, month):
     
     cal = calendar.Calendar()
     monthDates = cal.monthdayscalendar(year, month)
-    print daysInMonth(monthDates)
     
     rows = 7.0
     columns = 7.0
@@ -47,11 +47,15 @@ def init(can, w, h, year, month):
         posX = 10
         posY += boxHeight
         for day in week:
-            if day != 0:
-                can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
+            if day != currentDay or month != currentMonth:
+                if day != 0:
+                    can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
+                    can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+                else:
+                    can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
+            elif month == currentMonth:
+                can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "cyan3")
                 can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
-            else:
-                can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
             posX += boxWidth
     
     if len(monthDates) == 5:
@@ -78,7 +82,7 @@ def main():
     monthInt = currentMonth - 1
     yearInt = currentYear
     
-    monthLabel = Label(root, text = months[monthInt]+ "\t" + str(yearInt))
+    monthLabel = Label(root, text = months[monthInt]+ " " + str(yearInt))
     monthLabel.grid()
 
     def incMonth(*args):
@@ -87,12 +91,12 @@ def main():
         
         if monthInt <= 10:
             monthInt += 1
-            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
             init(win, 400, 500, yearInt, monthInt + 1)
         else:
             yearInt += 1
             monthInt = 0
-            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
             init(win, 400, 500, yearInt, monthInt + 1)
             
             
@@ -102,12 +106,12 @@ def main():
         
         if monthInt > 0:
             monthInt -= 1
-            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
             init(win, 400, 500, yearInt, monthInt + 1)
         else:
             yearInt -= 1
             monthInt = 11
-            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
             init(win, 400, 500, yearInt, monthInt + 1)
             
 
