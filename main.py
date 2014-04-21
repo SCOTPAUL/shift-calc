@@ -1,10 +1,32 @@
 #!usr/bin/python
 
 from Tkinter import *
+import datetime
+import calendar
 
+today = datetime.date.today()
 
-def init(can, w, h, numDays):
-    rows = 6.0
+currentYear = today.year
+currentMonth = today.month
+
+def daysInMonth(monthDates):
+    days = 0
+    for week in monthDates:
+        for day in week:
+            if day != 0:
+                days += 1
+    
+    return days
+                
+
+def init(can, w, h, year, month):
+    can.delete(ALL)
+    
+    cal = calendar.Calendar()
+    monthDates = cal.monthdayscalendar(year, month)
+    print daysInMonth(monthDates)
+    
+    rows = 7.0
     columns = 7.0
     
     
@@ -13,27 +35,33 @@ def init(can, w, h, numDays):
 
     posX = 10
     posY = 10
-    monthDay = 1
     days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
-
-    for week in range(int(rows)):
+    
+    for weekday in range(7):
+        can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
+        can.create_text(posX + 0.5*boxWidth, posY + 0.5*boxHeight, text = days[weekday])
+        posX += boxWidth
+   
+   
+    for week in monthDates:
         posX = 10
-        
-        for day in range(int(columns)):
-            
-            can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
-            
-            if week == 0:
-                can.create_text(posX+(0.5*boxWidth), posY+(0.5*boxHeight), text = days[day])
-                
-            elif monthDay < numDays + 1:
-                can.create_text(posX+(0.2*boxWidth), posY+(0.2*boxHeight), text = str(monthDay))
-                monthDay += 1
-                
-            posX += boxWidth
-            
         posY += boxHeight
+        for day in week:
+            if day != 0:
+                can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
+                can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+            else:
+                can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
+            posX += boxWidth
+    
+    if len(monthDates) == 5:
+        posY += boxHeight
+        posX = 10
+        for day in range(7):
+            can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
+            posX += boxWidth
 
+    
 
 def main():
     months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
@@ -46,22 +74,42 @@ def main():
     root.resizable(0,0)               #Prevents window from being resized
 
     global monthInt
-    monthInt = 0
-    monthLabel = Label(root, text = months[monthInt])
+    global yearInt
+    monthInt = currentMonth - 1
+    yearInt = currentYear
+    
+    monthLabel = Label(root, text = months[monthInt]+ "\t" + str(yearInt))
     monthLabel.grid()
 
     def incMonth(*args):
         global monthInt
+        global yearInt
+        
         if monthInt <= 10:
             monthInt += 1
-            monthLabel.configure(text = months[monthInt])
-            init(win, 400, 500, numDays[monthInt])
+            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            init(win, 400, 500, yearInt, monthInt + 1)
+        else:
+            yearInt += 1
+            monthInt = 0
+            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            init(win, 400, 500, yearInt, monthInt + 1)
+            
+            
     def decMonth(*args):
         global monthInt
+        global yearInt
+        
         if monthInt > 0:
             monthInt -= 1
-            monthLabel.configure(text = months[monthInt])
-            init(win, 400, 500, numDays[monthInt])
+            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            init(win, 400, 500, yearInt, monthInt + 1)
+        else:
+            yearInt -= 1
+            monthInt = 11
+            monthLabel.configure(text = months[monthInt] + "\t" + str(yearInt))
+            init(win, 400, 500, yearInt, monthInt + 1)
+            
 
     root.bind("<Right>", incMonth)
     root.bind("<Left>", decMonth)
@@ -72,7 +120,7 @@ def main():
     win.grid(ipadx = 10, ipady = 10)  #Places canvas on screen
 
     
-    init(win, 400, 500, numDays[monthInt])
+    init(win, 400, 500, currentYear, currentMonth)
 
     root.mainloop()
 
