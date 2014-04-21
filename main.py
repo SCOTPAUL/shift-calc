@@ -47,13 +47,13 @@ def init(can, w, h, year, month):
         posX = 10
         posY += boxHeight
         for day in week:
-            if day != currentDay or month != currentMonth:
+            if day != currentDay or month != currentMonth or year != currentYear:
                 if day != 0:
                     can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
                     can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
                 else:
                     can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
-            elif month == currentMonth:
+            else:
                 can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "cyan3")
                 can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
             posX += boxWidth
