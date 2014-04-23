@@ -83,7 +83,7 @@ def main():
     yearInt = currentYear
     
     monthLabel = Label(root, text = months[monthInt]+ " " + str(yearInt))
-    monthLabel.grid()
+    monthLabel.grid(row = 0)
 
     def incMonth(*args):
         global monthInt
@@ -92,12 +92,12 @@ def main():
         if monthInt <= 10:
             monthInt += 1
             monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-            init(win, 400, 500, yearInt, monthInt + 1)
+            init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
         else:
             yearInt += 1
             monthInt = 0
             monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-            init(win, 400, 500, yearInt, monthInt + 1)
+            init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
             
             
     def decMonth(*args):
@@ -107,24 +107,59 @@ def main():
         if monthInt > 0:
             monthInt -= 1
             monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-            init(win, 400, 500, yearInt, monthInt + 1)
-        else:
+            init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        elif yearInt > 1970:
             yearInt -= 1
             monthInt = 11
             monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-            init(win, 400, 500, yearInt, monthInt + 1)
+            init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+            
+    def incYear(*args):
+        global yearInt
+        
+        yearInt += 1
+        monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
+        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        
+    def decYear(*args):
+        global yearInt
+        
+        if yearInt > 1970:
+            yearInt -=1
+            monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
+            init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+            
+    def currentDate(*args):
+        global yearInt
+        global monthInt
+        
+        yearInt = currentYear
+        monthInt = currentMonth - 1
+    
+        monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
+        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
             
 
     root.bind("<Right>", incMonth)
     root.bind("<Left>", decMonth)
+    root.bind("<Up>", incYear)
+    root.bind("<Down>", decYear)
+    root.bind("<space>", currentDate)
+
+    CANWIDTH = 500
+    CANHEIGHT = 500
+
+    win = Canvas(root, width = CANWIDTH, height = CANHEIGHT)
+    win.grid(row = 1, ipadx = 10, ipady = 10)  #Places canvas on screen
+    
+    instruct = [Label(root, text = "Press the Left and Right arrow keys to change month, or Up and Down to change year"),
+                Label(root, text = "Spacebar will return you to the current date")]
+                                   
+    instruct[0].grid(row = 2)
+    instruct[1].grid(row = 3)
 
     
-
-    win = Canvas(root, width = 400, height = 500)
-    win.grid(ipadx = 10, ipady = 10)  #Places canvas on screen
-
-    
-    init(win, 400, 500, currentYear, currentMonth)
+    init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth)
 
     root.mainloop()
 
