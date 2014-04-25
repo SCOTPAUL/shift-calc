@@ -21,6 +21,8 @@ def daysInMonth(monthDates):
                 
 
 def init(can, w, h, year, month):
+    #Given a canvas, draws the calendar including dates
+    
     can.delete(ALL)
     
     cal = calendar.Calendar()
@@ -76,57 +78,116 @@ def main():
 
     root.title("Shift Calculator")
     root.resizable(0,0)               #Prevents window from being resized
+    
+    
+    
+    
+    
+    
+    #################Toolbar
+    
+    
+    def newHol():
+        newHoltop = Toplevel()
+        newHoltop.title("Add new holiday")
+        
+        start = Label(newHoltop, text = "Start Date:")
+        start.grid(row = 0)
+        
+        sString = StringVar()
+        sEntry = Entry(newHoltop, textvariable = sString)
+        sEntry.insert(0, "dd/mm/yy")
+        sEntry.grid(row = 0, column = 2)
+        
+        end = Label(newHoltop, text = "End Date:")
+        end.grid(row = 1)
+        
+        eString = StringVar()
+        eEntry = Entry(newHoltop, textvariable = eString)
+        eEntry.insert(0, "dd/mm/yy")
+        eEntry.grid(row = 1, column = 2)
+        
+        def getStartEnd():
+            s = sString.get()
+            e = eString.get()
+            
+            startLst = s.split("/")
+            endLst = e.split("/")
+            
+            print startLst, endLst
+        
+        submit = Button(newHoltop, text = "Submit", command = getStartEnd)
+        submit.grid(column = 0, columnspan = 3)
+        
+            
+       
+            
+    toolbar = Frame(root)
+    addHoliday = Button(toolbar, text = "Add Holiday", command = newHol)
+    addHoliday.grid()
+    
+    toolbar.grid(row = 0, sticky = "W")
+    
+    
 
     global monthInt
     global yearInt
     monthInt = currentMonth - 1
     yearInt = currentYear
     
+    #############Date Label
+    
     monthLabel = Label(root, text = months[monthInt]+ " " + str(yearInt))
-    monthLabel.grid(row = 0)
+    monthLabel.grid()
+    
+    
+    
+    #############Canvas fns
 
     def changeMonth(e):
+        #Changes the month/year variable when R or L keys are pressed
+        #Then draws new calendar for that month
+        
         global monthInt
         global yearInt
         
         if e.keysym == "Right":
             if monthInt <= 10:
                 monthInt += 1
-                monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-                init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
             else:
                 yearInt += 1
                 monthInt = 0
-                monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-                init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
-                
+                    
         elif e.keysym == "Left":
             if monthInt > 0:
                 monthInt -= 1
-                monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-                init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
             elif yearInt > 1970:
                 yearInt -= 1
                 monthInt = 11
-                monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-                init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        
+        monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
+        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
             
             
     def changeYear(e):
+        #Changes the year variable when U or D keys pressed
+        #Then draws the calendar for that month
         global yearInt
         
         if e.keysym == "Up":
             yearInt += 1
-            monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-            init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+            
         elif e.keysym == "Down":
             if yearInt > 1970:
                 yearInt -=1
-                monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-                init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        
+        monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
+        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
                 
             
     def changeCurrentDate(*args):
+        #When spacebar is pressed, draws the calendar at the current month
+        
         global yearInt
         global monthInt
         
@@ -143,18 +204,27 @@ def main():
     root.bind("<Down>", changeYear)
     root.bind("<space>", changeCurrentDate)
 
-    CANWIDTH = 500
+    CANWIDTH = 600
     CANHEIGHT = 500
 
     win = Canvas(root, width = CANWIDTH, height = CANHEIGHT)
-    win.grid(row = 1, ipadx = 10, ipady = 10)  #Places canvas on screen
+    win.grid(ipadx = 10, ipady = 10)  #Places canvas on screen
     
-    instruct = [Label(root, text = "Press the Left and Right arrow keys to change month, or Up and Down to change year"),
-                Label(root, text = "Spacebar will return you to the current date")]
+    
+    
+    
+    #########Instructions on bottom of screen
+    
+    instructions = Frame(root)
+    
+    instruct = Message(instructions, text = "Controls: Press Left and Right to change month, Up and Down to change year, and spacebar to return to the current date", width = 500)
                                    
-    instruct[0].grid(row = 2)
-    instruct[1].grid(row = 3)
-
+    instruct.grid(columnspan = 3)
+    
+    instructions.grid(sticky = "WE", columnspan = 3)
+    
+    
+    #############Draw first month
     
     init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth)
 
