@@ -3,13 +3,30 @@
 from Tkinter import *
 import datetime
 import calendar
+import pickle
 
 today = datetime.date.today()
 
 currentYear = today.year
 currentMonth = today.month
 currentDay = today.day
+HOLIDAYS = []
 
+def resetHOLIDAYS():
+    global HOLIDAYS
+    HOLIDAYS = []
+    fileHandler = open("./holidays.pck", "wb")
+    pickle.dump(HOLIDAYS, fileHandler)
+    fileHandler.close()
+    
+
+def readHOLIDAYS(filename):
+    fileHandler = open(filename, "rb")
+    HOLIDAYS = pickle.load(fileHandler)
+    fileHandler.close()
+    return HOLIDAYS
+    
+    
 def daysInMonth(monthDates):
     days = 0
     for week in monthDates:
@@ -58,6 +75,17 @@ def init(can, w, h, year, month):
             else:
                 can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "cyan3")
                 can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+            
+            
+            for holiday in HOLIDAYS:
+                try:
+                    myDate = datetime.date(year, month, day)
+                    if myDate >= holiday[0] and myDate <= holiday[1]:
+                        can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "green")
+                        can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+                except:
+                    continue
+                    
             posX += boxWidth
     
     if len(monthDates) == 5:
@@ -88,6 +116,8 @@ def main():
     
     
     def newHol():
+        global HOLIDAYS
+        
         newHoltop = Toplevel()
         newHoltop.title("Add new holiday")
         
@@ -96,7 +126,7 @@ def main():
         
         sString = StringVar()
         sEntry = Entry(newHoltop, textvariable = sString)
-        sEntry.insert(0, "dd/mm/yy")
+        sEntry.insert(0, "dd/mm/yyyy")
         sEntry.grid(row = 0, column = 2)
         
         end = Label(newHoltop, text = "End Date:")
@@ -104,27 +134,35 @@ def main():
         
         eString = StringVar()
         eEntry = Entry(newHoltop, textvariable = eString)
-        eEntry.insert(0, "dd/mm/yy")
+        eEntry.insert(0, "dd/mm/yyyy")
         eEntry.grid(row = 1, column = 2)
         
         def getStartEnd():
+            global HOLIDAYS
+            
             s = sString.get()
             e = eString.get()
             
-            startLst = s.split("/")
-            endLst = e.split("/")
+            try:
+                s = [int(i) for i in s.split("/")]
+                e = [int(i) for i in e.split("/")]
+                HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2],e[1],e[0])]]
+                newHoltop.destroy()
+            except:
+                pass
             
-            print startLst, endLst
-        
+         
         submit = Button(newHoltop, text = "Submit", command = getStartEnd)
         submit.grid(column = 0, columnspan = 3)
         
-            
-       
-            
+        
+    
     toolbar = Frame(root)
     addHoliday = Button(toolbar, text = "Add Holiday", command = newHol)
     addHoliday.grid()
+    
+    resetHolidays = Button(toolbar, text = "Reset Holidays", command = resetHOLIDAYS)
+    resetHolidays.grid(row = 0, column = 1)
     
     toolbar.grid(row = 0, sticky = "W")
     
@@ -157,7 +195,6 @@ def main():
             else:
                 yearInt += 1
                 monthInt = 0
-                    
         elif e.keysym == "Left":
             if monthInt > 0:
                 monthInt -= 1
@@ -227,8 +264,16 @@ def main():
     #############Draw first month
     
     init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth)
+    
+    def quitMain():
+        fileHandler = open("./holidays.pck", "wb")
+        pickle.dump(HOLIDAYS, fileHandler)
+        fileHandler.close()
+        root.destroy()
+    
+    root.protocol("WM_DELETE_WINDOW", quitMain)
 
     root.mainloop()
 
-
+HOLIDAYS = readHOLIDAYS("holidays.pck")
 main()
