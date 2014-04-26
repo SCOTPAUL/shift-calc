@@ -1,4 +1,4 @@
-#!usr/bin/python
+#!/usr/bin/python
 
 from Tkinter import *
 import datetime
@@ -15,13 +15,18 @@ HOLIDAYS = []
 def resetHOLIDAYS():
     global HOLIDAYS
     HOLIDAYS = []
-    fileHandler = open("./holidays.pck", "wb")
+    fileHandler = open("holidays.pck", "wb")
     pickle.dump(HOLIDAYS, fileHandler)
     fileHandler.close()
     
 
 def readHOLIDAYS(filename):
-    fileHandler = open(filename, "rb")
+    try:
+        fileHandler = open(filename, "rb")
+    except:
+        resetHOLIDAYS()
+        fileHandler = open(filename, "rb")
+        
     HOLIDAYS = pickle.load(fileHandler)
     fileHandler.close()
     return HOLIDAYS
@@ -266,7 +271,7 @@ def main():
     init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth)
     
     def quitMain():
-        fileHandler = open("./holidays.pck", "wb")
+        fileHandler = open("holidays.pck", "wb")
         pickle.dump(HOLIDAYS, fileHandler)
         fileHandler.close()
         root.destroy()
