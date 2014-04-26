@@ -15,7 +15,7 @@ HOLIDAYS = []
 def resetHOLIDAYS():
     global HOLIDAYS
     HOLIDAYS = []
-    fileHandler = open("holidays.pck", "wb")
+    fileHandler = open("./holidays.pck", "wb")
     pickle.dump(HOLIDAYS, fileHandler)
     fileHandler.close()
     
@@ -88,6 +88,7 @@ def init(can, w, h, year, month):
                     if myDate >= holiday[0] and myDate <= holiday[1]:
                         can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "green")
                         can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+                        can.create_text(posX + 0.5*boxWidth, posY + 0.5*boxHeight, text = holiday[2])
                 except:
                     continue
                     
@@ -125,33 +126,41 @@ def main():
         
         newHoltop = Toplevel()
         newHoltop.title("Add new holiday")
+
+        title = Label(newHoltop, text = "Title:")
+        title.grid(row = 0, sticky = "W")
+        
+        tString = StringVar()
+        tEntry = Entry(newHoltop, textvariable = tString)
+        tEntry.grid(row = 0, column = 2)
         
         start = Label(newHoltop, text = "Start Date:")
-        start.grid(row = 0)
+        start.grid(row = 1, sticky = "W")
         
         sString = StringVar()
         sEntry = Entry(newHoltop, textvariable = sString)
         sEntry.insert(0, "dd/mm/yyyy")
-        sEntry.grid(row = 0, column = 2)
+        sEntry.grid(row = 1, column = 2)
         
         end = Label(newHoltop, text = "End Date:")
-        end.grid(row = 1)
+        end.grid(row = 2, sticky = "W")
         
         eString = StringVar()
         eEntry = Entry(newHoltop, textvariable = eString)
         eEntry.insert(0, "dd/mm/yyyy")
-        eEntry.grid(row = 1, column = 2)
+        eEntry.grid(row = 2, column = 2)
         
         def getStartEnd():
             global HOLIDAYS
             
             s = sString.get()
             e = eString.get()
+            t = tString.get()
             
             try:
                 s = [int(i) for i in s.split("/")]
                 e = [int(i) for i in e.split("/")]
-                HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2],e[1],e[0])]]
+                HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2],e[1],e[0]), t]]
                 newHoltop.destroy()
             except:
                 pass
