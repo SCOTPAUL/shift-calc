@@ -4,6 +4,7 @@ from Tkinter import *
 import datetime
 import calendar
 import pickle
+import ttk
 
 today = datetime.date.today()
 
@@ -86,7 +87,7 @@ def init(can, w, h, year, month):
                 try:
                     myDate = datetime.date(year, month, day)
                     if myDate >= holiday[0] and myDate <= holiday[1]:
-                        can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "green")
+                        can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = holiday[3])
                         can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
                         can.create_text(posX + 0.5*boxWidth, posY + 0.5*boxHeight, text = holiday[2])
                 except:
@@ -150,17 +151,29 @@ def main():
         eEntry.insert(0, "dd/mm/yyyy")
         eEntry.grid(row = 2, column = 2)
         
+        
+        coloursLabel = Label(newHoltop, text = "Colour:")
+        coloursLabel.grid(row = 3, sticky = "W")
+        
+        allowedColours = ("red", "green", "blue", "orange", "yellow")
+        colourSelect = ttk.Combobox(newHoltop, values = allowedColours, width = 19)
+        colourSelect.set("red")
+        colourSelect.grid(row = 3, column = 2, sticky = "E")
+        
+        
+        
         def getStartEnd():
             global HOLIDAYS
             
             s = sString.get()
             e = eString.get()
             t = tString.get()
+            c = colourSelect.get()
             
             try:
                 s = [int(i) for i in s.split("/")]
                 e = [int(i) for i in e.split("/")]
-                HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2],e[1],e[0]), t]]
+                HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2],e[1],e[0]), t, c]]
                 newHoltop.destroy()
             except:
                 pass
