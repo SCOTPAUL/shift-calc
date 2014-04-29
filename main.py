@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from Tkinter import *
+import canvasFunctions
 import datetime
 import calendar
 import pickle
@@ -19,8 +20,8 @@ def resetHOLIDAYS():
     fileHandler = open("./holidays.pck", "wb")
     pickle.dump(HOLIDAYS, fileHandler)
     fileHandler.close()
-    
-
+   
+ 
 def readHOLIDAYS(filename):
     try:
         fileHandler = open(filename, "rb")
@@ -62,36 +63,49 @@ def init(can, w, h, year, month):
     posY = 10
     days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
     
-    for weekday in range(7):
-        can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
-        can.create_text(posX + 0.5*boxWidth, posY + 0.5*boxHeight, text = days[weekday])
-        posX += boxWidth
+    canvasFunctions.drawWeekDays(can, posX, posY, boxWidth, boxHeight, days)
    
    
     for week in monthDates:
         posX = 10
         posY += boxHeight
         for day in week:
-            if day != currentDay or month != currentMonth or year != currentYear:
-                if day != 0:
-                    can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "white")
-                    can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
-                else:
-                    can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
+            isCurrentDay = False
+
+            if day != 0:
+                canvasFunctions.drawDay(can, posX, posY, boxWidth, boxHeight, day)
             else:
-                can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "cyan3")
-                can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+                canvasFunctions.drawDayNotInMonth(can, posX, posY, boxWidth, boxHeight)
             
-            
+            if day == currentDay and month == currentMonth and year == currentYear:
+                isCurrentDay = True
+
             for holiday in HOLIDAYS:
+
+                isHoliday = False
+
                 try:
                     myDate = datetime.date(year, month, day)
+
                     if myDate >= holiday[0] and myDate <= holiday[1]:
-                        can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = holiday[3])
-                        can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+                        isHoliday = True
+
+                        if isCurrentDay:
+                            canvasFunctions.drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
+                        else:
+                            can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = holiday[3])
+                            can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
+
                         can.create_text(posX + 0.5*boxWidth, posY + 0.5*boxHeight, text = holiday[2])
+
                 except:
                     continue
+
+                    if not isHoliday and isCurrentDay:
+                        canvasFunctions.drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
+
+
+            
                     
             posX += boxWidth
     
@@ -99,7 +113,7 @@ def init(can, w, h, year, month):
         posY += boxHeight
         posX = 10
         for day in range(7):
-            can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = "gray")
+            canvasFunctions.drawDayNotInMonth(can, posX, posY, boxWidth, boxHeight)
             posX += boxWidth
 
     
