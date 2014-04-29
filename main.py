@@ -14,6 +14,8 @@ currentDay = today.day
 HOLIDAYS = []
 
 def resetHOLIDAYS():
+    #Resets the HOLIDAYS variable to [] and updates file
+
     global HOLIDAYS
     HOLIDAYS = []
     fileHandler = open("./holidays.pck", "wb")
@@ -22,6 +24,8 @@ def resetHOLIDAYS():
    
  
 def readHOLIDAYS(filename):
+    #Reads in data for HOLIDAYS using pickle
+
     try:
         fileHandler = open(filename, "rb")
     except:
@@ -31,19 +35,16 @@ def readHOLIDAYS(filename):
     HOLIDAYS = pickle.load(fileHandler)
     fileHandler.close()
     return HOLIDAYS
-    
-    
-def daysInMonth(monthDates):
-    days = 0
-    for week in monthDates:
-        for day in week:
-            if day != 0:
-                days += 1
-    
-    return days
-                
+
 
 def main():
+    #Main body of program, creates canvas and graphical elements
+
+    global monthInt
+    global yearInt
+    monthInt = currentMonth - 1
+    yearInt = currentYear
+
     months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
                "Nov", "Dec"])
     numDays = (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
@@ -51,17 +52,14 @@ def main():
     root = Tk()
 
     root.title("Shift Calculator")
-    root.resizable(0,0)               #Prevents window from being resized
+    root.resizable(0,0)               #Prevents window from being resized 
     
-    
-    
-    
-    
-    
-    #################Toolbar
-    
+
+    #Toolbar
     
     def newHol():
+        #Opens window for adding new holidays to HOLIDAYS variable
+
         global HOLIDAYS
         
         newHoltop = Toplevel()
@@ -102,6 +100,9 @@ def main():
         
         
         def getStartEnd():
+            #When holiday submitted, gets date, colour, title values and adds to
+            #HOLLIDAYS variable
+
             global HOLIDAYS
             
             s = sString.get()
@@ -134,20 +135,14 @@ def main():
     toolbar.grid(row = 0, sticky = "W")
     
     
-
-    global monthInt
-    global yearInt
-    monthInt = currentMonth - 1
-    yearInt = currentYear
-    
-    #############Date Label
+    #Date Label
     
     monthLabel = Label(root, text = months[monthInt]+ " " + str(yearInt))
     monthLabel.grid()
     
     
     
-    #############Canvas fns
+    #Canvas fns
 
     def changeMonth(e):
         #Changes the month/year variable when R or L keys are pressed
@@ -215,7 +210,7 @@ def main():
     win.grid(ipadx = 10, ipady = 10)  #Places canvas on screen
     
     
-    #########Instructions on bottom of screen
+    #Instructions on bottom of screen
     
     instructions = Frame(root)
     
@@ -226,19 +221,23 @@ def main():
     instructions.grid(sticky = "WE", columnspan = 3)
     
     
-    #############Draw first month
+    #Draw first month
     
     canvasFunctions.init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth, today, HOLIDAYS)
     
     def quitMain():
+        #When program closed, writes HOLIDAYS to holidays.pck
         fileHandler = open("holidays.pck", "wb")
         pickle.dump(HOLIDAYS, fileHandler)
         fileHandler.close()
         root.destroy()
     
-    root.protocol("WM_DELETE_WINDOW", quitMain)
+    root.protocol("WM_DELETE_WINDOW", quitMain)  #Calls quitMain when closing root window
 
     root.mainloop()
+
+
+############
 
 HOLIDAYS = readHOLIDAYS("holidays.pck")
 main()
