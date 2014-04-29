@@ -42,8 +42,8 @@ def init(can, w, h, year, month, today, HOLIDAYS):
             if day == currentDay and month == currentMonth and year == currentYear:
                 isCurrentDay = True
 
+            anyHoliday = False
             for holiday in HOLIDAYS:
-
                 isHoliday = False
 
                 try:
@@ -51,6 +51,7 @@ def init(can, w, h, year, month, today, HOLIDAYS):
 
                     if myDate >= holiday[0] and myDate <= holiday[1]:
                         isHoliday = True
+                        anyHoliday = True
 
                         if isCurrentDay:
                             drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
@@ -63,8 +64,8 @@ def init(can, w, h, year, month, today, HOLIDAYS):
                 except:
                     continue
 
-                    if not isHoliday and isCurrentDay:
-                        drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
+            if not anyHoliday and isCurrentDay:
+                drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
 
 
             
