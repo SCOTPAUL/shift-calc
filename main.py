@@ -5,6 +5,7 @@ import canvasFunctions
 import datetime
 import pickle
 import ttk
+import tooltip
 
 today = datetime.date.today()
 
@@ -144,10 +145,12 @@ def main():
     #Add holiday button calls newHol with args to refresh window
     addHoliday = Button(toolbar, text = "Add Holiday", command = lambda: newHol(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today))
     addHoliday.grid()
+    tooltip.createToolTip(addHoliday, "Adds a new holiday to the calendar")
     
     #Reset button clears HOLIDAYS, resets to current date
     resetHolidays = Button(toolbar, text = "Reset Holidays", command = lambda: [resetHOLIDAYS(), changeCurrentDate()] )
     resetHolidays.grid(row = 0, column = 1)
+    tooltip.createToolTip(resetHolidays, "Resets all of the user set holidays")
     
     toolbar.grid(row = 0, sticky = "W")
     
