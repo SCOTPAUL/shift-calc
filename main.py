@@ -3,7 +3,6 @@
 from Tkinter import *
 import canvasFunctions
 import datetime
-import calendar
 import pickle
 import ttk
 
@@ -43,80 +42,6 @@ def daysInMonth(monthDates):
     
     return days
                 
-
-def init(can, w, h, year, month):
-    #Given a canvas, draws the calendar including dates
-    
-    can.delete(ALL)
-    
-    cal = calendar.Calendar()
-    monthDates = cal.monthdayscalendar(year, month)
-    
-    rows = 7.0
-    columns = 7.0
-    
-    
-    boxWidth = w/columns
-    boxHeight = h/rows
-
-    posX = 10
-    posY = 10
-    days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
-    
-    canvasFunctions.drawWeekDays(can, posX, posY, boxWidth, boxHeight, days)
-   
-   
-    for week in monthDates:
-        posX = 10
-        posY += boxHeight
-        for day in week:
-            isCurrentDay = False
-
-            if day != 0:
-                canvasFunctions.drawDay(can, posX, posY, boxWidth, boxHeight, day)
-            else:
-                canvasFunctions.drawDayNotInMonth(can, posX, posY, boxWidth, boxHeight)
-            
-            if day == currentDay and month == currentMonth and year == currentYear:
-                isCurrentDay = True
-
-            for holiday in HOLIDAYS:
-
-                isHoliday = False
-
-                try:
-                    myDate = datetime.date(year, month, day)
-
-                    if myDate >= holiday[0] and myDate <= holiday[1]:
-                        isHoliday = True
-
-                        if isCurrentDay:
-                            canvasFunctions.drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
-                        else:
-                            can.create_rectangle(posX, posY, posX + boxWidth, posY + boxHeight, fill = holiday[3])
-                            can.create_text(posX + 0.2*boxWidth, posY + 0.2*boxHeight, text = str(day))
-
-                        can.create_text(posX + 0.5*boxWidth, posY + 0.5*boxHeight, text = holiday[2])
-
-                except:
-                    continue
-
-                    if not isHoliday and isCurrentDay:
-                        canvasFunctions.drawCurrentDay(can, posX, posY, boxWidth, boxHeight, day)
-
-
-            
-                    
-            posX += boxWidth
-    
-    if len(monthDates) == 5:
-        posY += boxHeight
-        posX = 10
-        for day in range(7):
-            canvasFunctions.drawDayNotInMonth(can, posX, posY, boxWidth, boxHeight)
-            posX += boxWidth
-
-    
 
 def main():
     months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
@@ -188,6 +113,7 @@ def main():
                 s = [int(i) for i in s.split("/")]
                 e = [int(i) for i in e.split("/")]
                 HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2],e[1],e[0]), t, c]]
+                canvasFunctions.init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, HOLIDAYS)
                 newHoltop.destroy()
             except:
                 pass
@@ -244,7 +170,7 @@ def main():
                 monthInt = 11
         
         monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        canvasFunctions.init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, HOLIDAYS)
             
             
     def changeYear(e):
@@ -260,7 +186,7 @@ def main():
                 yearInt -=1
         
         monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        canvasFunctions.init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, HOLIDAYS)
                 
             
     def changeCurrentDate(*args):
@@ -273,7 +199,7 @@ def main():
         monthInt = currentMonth - 1
     
         monthLabel.configure(text = months[monthInt] + " " + str(yearInt))
-        init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1)
+        canvasFunctions.init(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, HOLIDAYS)
             
 
     root.bind("<Right>", changeMonth)
@@ -289,8 +215,6 @@ def main():
     win.grid(ipadx = 10, ipady = 10)  #Places canvas on screen
     
     
-    
-    
     #########Instructions on bottom of screen
     
     instructions = Frame(root)
@@ -304,7 +228,7 @@ def main():
     
     #############Draw first month
     
-    init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth)
+    canvasFunctions.init(win, CANWIDTH, CANHEIGHT, currentYear, currentMonth, today, HOLIDAYS)
     
     def quitMain():
         fileHandler = open("holidays.pck", "wb")
