@@ -14,6 +14,9 @@ currentMonth = today.month
 currentDay = today.day
 HOLIDAYS = []
 
+months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+               "Nov", "Dec"])
+
 
 def resetHOLIDAYS():
     #Resets the HOLIDAYS variable to [] and updates file
@@ -37,6 +40,46 @@ def readHOLIDAYS(filename):
     HOLIDAYS = pickle.load(fileHandler)
     fileHandler.close()
     return HOLIDAYS
+
+
+def gotoDate(can, w, h, year, month, today, monthLabel):
+    dateTop = Toplevel()
+    dateTop.title("Enter date")
+
+    #Inputs for month/year
+    gotoMonth = Label(dateTop, text = "Month:")
+    gotoMonth.grid(row = 0, column = 0)
+
+    mEntry = Entry(dateTop)
+    mEntry.grid(row = 0, column = 1)
+
+    gotoYear = Label(dateTop, text = "Year:")
+    gotoYear.grid(row = 1, column = 0)
+
+    yEntry = Entry(dateTop)
+    yEntry.grid(row = 1, column = 1)
+
+    def monthJump():
+
+        global yearInt
+        global monthInt
+    
+        try:
+            month = int(mEntry.get())
+            year = int(yEntry.get())
+
+            if month > 0 and month <= 12 and year >= 1970 and year < 3000:
+                monthInt = month - 1
+                yearInt = year
+
+                canvasFunctions.init(can, w, h, yearInt, monthInt + 1, today, HOLIDAYS)
+                monthLabel.configure(text = months[monthInt] + " " + str(year))
+                dateTop.destroy()
+        except:
+            pass
+
+    submit = Button(dateTop, text = "Submit", command = monthJump)
+    submit.grid(column = 0, columnspan = 3)
 
 
 def newHol(can, w, h, year, month, today):
@@ -153,6 +196,11 @@ def main():
     tooltip.createToolTip(resetHolidays, "Resets all of the user set holidays")
     
     toolbar.grid(row = 0, sticky = "W")
+
+    #Goto month button opens window to jump to a date
+    gotoMonthButton = Button(toolbar, text = "Goto month", command = lambda: gotoDate(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, monthLabel))
+    gotoMonthButton.grid(row= 0, column = 2)
+    tooltip.createToolTip(gotoMonthButton, "Jump to a specific month")
     
     
     #Date Label
