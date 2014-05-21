@@ -68,7 +68,7 @@ def gotoDate(can, w, h, year, month, today, monthLabel):
             month = int(mEntry.get())
             year = int(yEntry.get())
 
-            if month > 0 and month <= 12 and year >= 1970 and year < 3000:
+            if month > 0 and month <= 12 and year >= 1970 and year < 5000:
                 monthInt = month - 1
                 yearInt = year
 
@@ -281,7 +281,7 @@ def main():
     #Instructions on bottom of screen
     
     instructions = Frame(root)
-    instruct = Message(instructions, text = ("Controls: Press Left and Right to change month, Up and Down to"
+    instruct = Message(instructions, text = ("Controls: Press Left and Right to change month, Up and Down to "
                                              "change year, and spacebar to return to the current date"), width = 500)                                 
     instruct.grid(columnspan = 3)
     instructions.grid(sticky = "WE", columnspan = 3)
