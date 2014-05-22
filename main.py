@@ -23,6 +23,7 @@ def aboutInfo():
 
     infoTop = Toplevel()
     infoTop.title("About")
+    infoTop.resizable(0,0)
 
     strtText = Label(infoTop, text = "About the application")
     strtText.grid()
