@@ -18,6 +18,26 @@ months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
                "Nov", "Dec"])
 
 
+def aboutInfo():
+    #Opens window for information about application
+
+    infoTop = Toplevel()
+    infoTop.title("About")
+
+    strtText = Label(infoTop, text = "About the application")
+    strtText.grid()
+
+    devText = Label(infoTop, text = "Developer: Paul Cowie")
+    devText.grid()
+
+    dateText = Label(infoTop, text = u"Copyright: \u00a9 2014")
+    dateText.grid()
+
+    submit = Button(infoTop, text = "Ok", command = infoTop.destroy)
+    submit.grid(column = 0, columnspan = 3)
+
+
+
 def resetHOLIDAYS():
     #Resets the HOLIDAYS variable to [] and updates file
 
@@ -178,11 +198,16 @@ def main():
     #Init root window
     root = Tk()
     root.title("Shift Calculator")
-    root.resizable(0,0)               #Prevents window from being resized 
-    
+    root.resizable(0,0)               #Prevents window from being resized
+
+    #Menu
+    menubar = Menu(root)
+    helpMenu = Menu(menubar, tearoff = 0)
+    helpMenu.add_command(label = "About!", command = aboutInfo)
+    menubar.add_cascade(label = "Help", menu = helpMenu)
+    root.config(menu = menubar)
 
     #Toolbar   
-    
     toolbar = Frame(root)
 
     #Add holiday button calls newHol with args to refresh window
