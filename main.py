@@ -45,6 +45,7 @@ def readHOLIDAYS(filename):
 def gotoDate(can, w, h, year, month, today, monthLabel):
     dateTop = Toplevel()
     dateTop.title("Enter date")
+    dateTop.resizable(0,0)
 
     #Inputs for month/year
     gotoMonth = Label(dateTop, text = "Month:")
@@ -90,6 +91,7 @@ def newHol(can, w, h, year, month, today):
     #Create a new window
     newHoltop = Toplevel()
     newHoltop.title("Add new holiday")
+    newHoltop.resizable(0,0)
 
     #Title label
     title = Label(newHoltop, text = "Title:")
