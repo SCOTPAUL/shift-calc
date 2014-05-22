@@ -201,9 +201,9 @@ def main():
     root.resizable(0,0)               #Prevents window from being resized
 
     #Menu
-    menubar = Menu(root)
+    menubar = Menu(root, relief = FLAT)
     helpMenu = Menu(menubar, tearoff = 0)
-    helpMenu.add_command(label = "About!", command = aboutInfo)
+    helpMenu.add_command(label = "About", command = aboutInfo)
     menubar.add_cascade(label = "Help", menu = helpMenu)
     root.config(menu = menubar)
 
