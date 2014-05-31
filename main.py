@@ -18,6 +18,26 @@ months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
                "Nov", "Dec"])
 
 
+def resetHOLIDAYSGUI():
+    confirmTop = Toplevel()
+    confirmTop.title("Are you sure you wish to continue?")
+    confirmTop.resizable(0,0)
+
+    #Warning to user
+    warningLabel = Label(confirmTop, text = "WARNING: This will remove all holidays from the application\nAre you sure you wish to continue?")
+    warningLabel.grid()
+
+    buttons = Frame(confirmTop)
+
+    okButton = Button(buttons, text = "OK", command = lambda: [resetHOLIDAYS(), confirmTop.destroy()])
+    okButton.grid(row = 0, column = 1)
+
+    cancelButton = Button(buttons, text = "Cancel", command = confirmTop.destroy)
+    cancelButton.grid(row = 0, column = 0)
+
+    buttons.grid(row = 1)
+
+
 def resetHOLIDAYS():
     #Resets the HOLIDAYS variable to [] and updates file
 
@@ -193,16 +213,17 @@ def main():
     tooltip.createToolTip(addHoliday, "Adds a new holiday to the calendar")
     
     #Reset button clears HOLIDAYS, resets to current date
-    resetHolidays = Button(toolbar, text = "Reset Holidays", command = lambda: [resetHOLIDAYS(), changeCurrentDate()] )
+    resetHolidays = Button(toolbar, text = "Reset Holidays", command = resetHOLIDAYSGUI)
     resetHolidays.grid(row = 0, column = 1)
     tooltip.createToolTip(resetHolidays, "Resets all of the user set holidays")
     
-    toolbar.grid(row = 0, sticky = "W")
 
     #Goto month button opens window to jump to a date
     gotoMonthButton = Button(toolbar, text = "Goto month", command = lambda: gotoDate(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, monthLabel))
     gotoMonthButton.grid(row= 0, column = 2)
     tooltip.createToolTip(gotoMonthButton, "Jump to a specific month")
+
+    toolbar.grid(row = 0, sticky = "W")
     
     
     #Date Label
