@@ -18,6 +18,7 @@ months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
                "Nov", "Dec"])
 
 
+<<<<<<< HEAD
 def resetHOLIDAYSGUI():
     confirmTop = Toplevel()
     confirmTop.title("Are you sure you wish to continue?")
@@ -36,6 +37,27 @@ def resetHOLIDAYSGUI():
     cancelButton.grid(row = 0, column = 0)
 
     buttons.grid(row = 1)
+=======
+def aboutInfo():
+    #Opens window for information about application
+
+    infoTop = Toplevel()
+    infoTop.title("About")
+    infoTop.resizable(0,0)
+
+    strtText = Label(infoTop, text = "About the application")
+    strtText.grid()
+
+    devText = Label(infoTop, text = "Developer: Paul Cowie")
+    devText.grid()
+
+    dateText = Label(infoTop, text = u"\u00a9 Paul Cowie 2014")
+    dateText.grid()
+
+    submit = Button(infoTop, text = "Ok", command = infoTop.destroy)
+    submit.grid(column = 0, columnspan = 3)
+
+>>>>>>> menubar
 
 
 def resetHOLIDAYS():
@@ -200,11 +222,29 @@ def main():
     #Init root window
     root = Tk()
     root.title("Shift Calculator")
-    root.resizable(0,0)               #Prevents window from being resized 
-    
+    root.resizable(0,0)               #Prevents window from being resized
+
+    #Menu
+    menubar = Menu(root, relief = FLAT)
+
+
+    #Contains standard calendar functions
+    fileMenu = Menu(menubar, tearoff = 0)
+    fileMenu.add_command(label = "Add holiday", command = lambda: newHol(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today))
+    fileMenu.add_command(label = "Reset holidays", command = lambda: [resetHOLIDAYS(), changeCurrentDate()])
+    fileMenu.add_command(label = "Goto month", command = lambda: gotoDate(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, monthLabel))
+    menubar.add_cascade(label = "File", menu = fileMenu)
+
+    #Contains about option, giving application information
+    helpMenu = Menu(menubar, tearoff = 0)
+    helpMenu.add_command(label = "About", command = aboutInfo)
+    menubar.add_cascade(label = "Help", menu = helpMenu)
+
+    #Display on screen
+    root.config(menu = menubar)
+
 
     #Toolbar   
-    
     toolbar = Frame(root)
 
     #Add holiday button calls newHol with args to refresh window
