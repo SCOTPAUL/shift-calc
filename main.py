@@ -18,7 +18,6 @@ months = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
                "Nov", "Dec"])
 
 
-<<<<<<< HEAD
 def resetHOLIDAYSGUI():
     confirmTop = Toplevel()
     confirmTop.title("Are you sure you wish to continue?")
@@ -37,7 +36,8 @@ def resetHOLIDAYSGUI():
     cancelButton.grid(row = 0, column = 0)
 
     buttons.grid(row = 1)
-=======
+
+
 def aboutInfo():
     #Opens window for information about application
 
@@ -57,7 +57,6 @@ def aboutInfo():
     submit = Button(infoTop, text = "Ok", command = infoTop.destroy)
     submit.grid(column = 0, columnspan = 3)
 
->>>>>>> menubar
 
 
 def resetHOLIDAYS():
@@ -231,7 +230,7 @@ def main():
     #Contains standard calendar functions
     fileMenu = Menu(menubar, tearoff = 0)
     fileMenu.add_command(label = "Add holiday", command = lambda: newHol(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today))
-    fileMenu.add_command(label = "Reset holidays", command = lambda: [resetHOLIDAYS(), changeCurrentDate()])
+    fileMenu.add_command(label = "Reset holidays", command = resetHOLIDAYSGUI)
     fileMenu.add_command(label = "Goto month", command = lambda: gotoDate(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, monthLabel))
     menubar.add_cascade(label = "File", menu = fileMenu)
 
