@@ -31,7 +31,7 @@ def aboutInfo():
     devText = Label(infoTop, text = "Developer: Paul Cowie")
     devText.grid()
 
-    dateText = Label(infoTop, text = u"Copyright: \u00a9 2014")
+    dateText = Label(infoTop, text = u"\u00a9 Paul Cowie 2014")
     dateText.grid()
 
     submit = Button(infoTop, text = "Ok", command = infoTop.destroy)
@@ -203,10 +203,23 @@ def main():
 
     #Menu
     menubar = Menu(root, relief = FLAT)
+
+
+    #Contains standard calendar functions
+    fileMenu = Menu(menubar, tearoff = 0)
+    fileMenu.add_command(label = "Add holiday", command = lambda: newHol(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today))
+    fileMenu.add_command(label = "Reset holidays", command = lambda: [resetHOLIDAYS(), changeCurrentDate()])
+    fileMenu.add_command(label = "Goto month", command = lambda: gotoDate(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today, monthLabel))
+    menubar.add_cascade(label = "File", menu = fileMenu)
+
+    #Contains about option, giving application information
     helpMenu = Menu(menubar, tearoff = 0)
     helpMenu.add_command(label = "About", command = aboutInfo)
     menubar.add_cascade(label = "Help", menu = helpMenu)
+
+    #Display on screen
     root.config(menu = menubar)
+
 
     #Toolbar   
     toolbar = Frame(root)
