@@ -11,7 +11,7 @@ class ShiftBox:
 
         self.dims = self._calculate_box_dims()
         self.text_dims = (
-            self.dims[0] + 0.5 * self.shift_calendar.box_width, self.dims[1] + 0.5 * self.shift_calendar.box_height)
+            self.dims[0] + 0.2 * self.shift_calendar.box_width, self.dims[1] + 0.2 * self.shift_calendar.box_height)
 
         self.rect = self.canvas.create_rectangle(self.dims)
         self.text = self.canvas.create_text(self.text_dims, text="")
@@ -39,7 +39,7 @@ class ShiftBox:
 
     def _calculate_box_dims(self):
         x1 = 10 + (self.box_num % self.shift_calendar.columns) * self.shift_calendar.box_width
-        y1 = 10 + (self.box_num / self.shift_calendar.rows) * self.shift_calendar.box_height
+        y1 = 10 + (self.box_num / self.shift_calendar.columns) * self.shift_calendar.box_height
         x2 = x1 + self.shift_calendar.box_width
         y2 = y1 + self.shift_calendar.box_height
         return x1, y1, x2, y2
@@ -63,7 +63,7 @@ class ShiftCalendar:
 
         self.calendar = calendar.Calendar()
 
-        self.rows = 7
+        self.rows = 6
         self.columns = 7
 
         self.box_width = width / self.columns

@@ -21,7 +21,7 @@ root.title("Shift Calculator")
 root.resizable(0, 0)  # Prevents window from being resized
 
 can_width = 600
-can_height = 500
+can_height = 528
 calendar = shiftCalendar.ShiftCalendar(root, can_width, can_height)
 
 monthInt = currentMonth - 1
