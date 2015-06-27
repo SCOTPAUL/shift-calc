@@ -2,23 +2,28 @@ import pickle
 
 
 class HolidayManager:
+    """
+    Manages the holidays associated with the calendar
+    """
     def __init__(self, filename):
         self.holidays = []
         self.filename = filename
         self.read()
 
     def reset(self):
-        # Resets the HOLIDAYS variable to [] and updates file
+        """
+        Resets and updates the holidays file
+        """
         self.holidays = []
-        file_handler = open(self.filename, "wb")
-        pickle.dump(self.holidays, file_handler)
-        file_handler.close()
+        self.write()
 
     def read(self):
-        # Reads in data for holidays using pickle
+        """
+        Reads in data for holidays using pickle
+        """
         try:
             file_handler = open(self.filename, "rb")
-        except:
+        except IOError:
             self.reset()
             file_handler = open(self.filename, "rb")
 
@@ -28,6 +33,9 @@ class HolidayManager:
         self.holidays = holidays
 
     def write(self):
+        """
+        Writes out the holidays to a file
+        """
         file_handler = open(self.filename, "wb")
         pickle.dump(self.holidays, file_handler)
         file_handler.close()
