@@ -22,7 +22,7 @@ root.resizable(0, 0)  # Prevents window from being resized
 
 can_width = 600
 can_height = 528
-calendar = shiftCalendar.ShiftCalendar(root, can_width, can_height)
+calendar = shiftCalendar.ShiftCalendar(root, can_width, can_height, holiday_manager)
 
 monthInt = currentMonth - 1
 yearInt = currentYear
@@ -107,84 +107,80 @@ def goto_date():
     submit.grid(column=0, columnspan=3)
 
 
-# def newHol(shift_calendar):
-# # Opens window for adding new holidays to HOLIDAYS variable
-#
-# global HOLIDAYS
-#
-#     # Create a new window
-#     newHoltop = Toplevel()
-#     newHoltop.title("Add new holiday")
-#     newHoltop.resizable(0, 0)
-#
-#     # Title label
-#     title = Label(newHoltop, text="Title:")
-#     title.grid(row=0, sticky="W")
-#
-#     #Title entry box
-#     tString = StringVar()
-#     tEntry = Entry(newHoltop, textvariable=tString)
-#     tEntry.grid(row=0, column=2)
-#
-#     #Start date label
-#     start = Label(newHoltop, text="Start Date:")
-#     start.grid(row=1, sticky="W")
-#
-#     #Start date entry box
-#     sString = StringVar()
-#     sEntry = Entry(newHoltop, textvariable=sString)
-#     sEntry.insert(0, "dd/mm/yyyy")
-#     sEntry.grid(row=1, column=2)
-#
-#     #End date label
-#     end = Label(newHoltop, text="End Date:")
-#     end.grid(row=2, sticky="W")
-#
-#     #End date entry box
-#     eString = StringVar()
-#     eEntry = Entry(newHoltop, textvariable=eString)
-#     eEntry.insert(0, "dd/mm/yyyy")
-#     eEntry.grid(row=2, column=2)
-#
-#     #Colour label
-#     coloursLabel = Label(newHoltop, text="Colour:")
-#     coloursLabel.grid(row=3, sticky="W")
-#
-#     #Colour ttk combobox
-#     allowedColours = ["red", "green", "blue", "orange", "yellow", "purple"]
-#     allowedColours.sort()
-#     colourSelect = ttk.Combobox(newHoltop, values=allowedColours, width=19)
-#     colourSelect.set("Choose a colour...")
-#     colourSelect.grid(row=3, column=2, sticky="E")
-#
-#     def get_start_end():
-#         # When holiday submitted, gets date, colour, title values and adds to
-#         # HOLIDAYS variable
-#
-#         global HOLIDAYS
-#
-#         s = sString.get()
-#         e = eString.get()
-#         t = tString.get()
-#         c = colourSelect.get()
-#
-#         if c in allowedColours:
-#             try:
-#                 s = [int(i) for i in s.split("/")]
-#                 e = [int(i) for i in e.split("/")]
-#                 HOLIDAYS += [[datetime.date(s[2], s[1], s[0]), datetime.date(e[2], e[1], e[0]), t, c]]
-#
-#                 #Refresh canvas
-#                 canvasFunctions.init(can, w, h, year, month, today, HOLIDAYS)
-#
-#                 #Destroy popup window
-#                 newHoltop.destroy()
-#             except:
-#                 pass
-#
-#
-#     submit = Button(newHoltop, text="Submit", command=getStartEnd)
-#     submit.grid(column=0, columnspan=3)
+def add_new_holiday(holiday_manager):
+    # Opens window for adding new holidays to the holiday file
+
+    # Create a new window
+    new_hol_top = Toplevel()
+    new_hol_top.title("Add new holiday")
+    new_hol_top.resizable(0, 0)
+
+    # Title label
+    title = Label(new_hol_top, text="Title:")
+    title.grid(row=0, sticky="W")
+
+    # Title entry box
+    t_string = StringVar()
+    t_entry = Entry(new_hol_top, textvariable=t_string)
+    t_entry.grid(row=0, column=2)
+
+    # Start date label
+    start = Label(new_hol_top, text="Start Date:")
+    start.grid(row=1, sticky="W")
+
+    # Start date entry box
+    s_string = StringVar()
+    s_entry = Entry(new_hol_top, textvariable=s_string)
+    s_entry.insert(0, "dd/mm/yyyy")
+    s_entry.grid(row=1, column=2)
+
+    # End date label
+    end = Label(new_hol_top, text="End Date:")
+    end.grid(row=2, sticky="W")
+
+    # End date entry box
+    e_string = StringVar()
+    e_entry = Entry(new_hol_top, textvariable=e_string)
+    e_entry.insert(0, "dd/mm/yyyy")
+    e_entry.grid(row=2, column=2)
+
+    # Colour label
+    colours_label = Label(new_hol_top, text="Colour:")
+    colours_label.grid(row=3, sticky="W")
+
+    # Colour ttk combobox
+    allowed_colours = ["red", "green", "blue", "orange", "yellow", "purple"]
+    allowed_colours.sort()
+    colour_select = ttk.Combobox(new_hol_top, values=allowed_colours, width=19)
+    colour_select.set("Choose a colour...")
+    colour_select.grid(row=3, column=2, sticky="E")
+
+    def get_start_end():
+        # When holiday submitted, gets date, colour, title values and adds to
+        # HOLIDAYS variable
+
+        s = s_string.get()
+        e = e_string.get()
+        t = t_string.get()
+        c = colour_select.get()
+
+        if c in allowed_colours:
+            try:
+                s = [int(i) for i in s.split("/")]
+                e = [int(i) for i in e.split("/")]
+                holiday_manager.add_holiday(datetime.date(s[2], s[1], s[0]), datetime.date(e[2], e[1], e[0]), t, c)
+
+                # Refresh canvas
+                calendar.draw_month(monthInt + 1, yearInt)
+
+                # Destroy popup window
+                new_hol_top.destroy()
+            except:
+                pass
+
+
+    submit = Button(new_hol_top, text="Submit", command=get_start_end)
+    submit.grid(column=0, columnspan=3)
 
 
 def main():
@@ -269,8 +265,9 @@ menubar = Menu(root, relief=FLAT)
 
 # Contains standard calendar functions
 fileMenu = Menu(menubar, tearoff=0)
-# fileMenu.add_command(label="Add holiday",
-#                     command=lambda: newHol(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today))
+fileMenu.add_command(label="Add holiday",
+                     command=lambda: add_new_holiday(holiday_manager))
+
 fileMenu.add_command(label="Reset holidays", command=reset_holidays_gui)
 fileMenu.add_command(label="Goto month",
                      command=goto_date)
@@ -288,21 +285,16 @@ root.config(menu=menubar)
 # Toolbar
 toolbar = Frame(root)
 
-# Add holiday button calls newHol with args to refresh window
-# addHoliday = Button(toolbar, text="Add Holiday",
-#                    command=lambda: newHol(win, CANWIDTH, CANHEIGHT, yearInt, monthInt + 1, today))
-# addHoliday.grid()
-# tooltip.createToolTip(addHoliday, "Adds a new holiday to the calendar")
+# Add holiday button calls add_new_holiday with args to refresh window
+addHoliday = Button(toolbar, text="Add Holiday",
+                    command=lambda: add_new_holiday(holiday_manager))
+addHoliday.grid(row=0, column=0)
+tooltip.createToolTip(addHoliday, "Adds a new holiday to the calendar")
 
 # Reset button clears holidays, resets to current date
 resetHolidays = Button(toolbar, text="Reset Holidays", command=reset_holidays_gui)
 resetHolidays.grid(row=0, column=1)
 tooltip.createToolTip(resetHolidays, "Resets all of the user set holidays")
-
-# Goto month button opens window to jump to a date
-goto_month_button = Button(toolbar, text="Goto month", command=goto_date)
-goto_month_button.grid(row=0, column=2)
-tooltip.createToolTip(goto_month_button, "Jump to a specific month")
 
 toolbar.grid(row=0, sticky="W")
 

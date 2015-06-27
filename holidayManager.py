@@ -1,4 +1,5 @@
 import pickle
+import datetime
 
 
 class HolidayManager:
@@ -9,6 +10,20 @@ class HolidayManager:
         self.holidays = []
         self.filename = filename
         self.read()
+
+    def add_holiday(self, start, end, title, colour):
+        self.holidays.append([start, end, title, colour])
+
+    def get_holiday(self, day, month, year):
+        """
+        :returns Holiday if parameters occur during it, else returns None
+        """
+        current_date = datetime.date(year, month, day)
+        for holiday in self.holidays:
+            if holiday[0] <= current_date <= holiday[1]:
+                return holiday
+
+        return None
 
     def reset(self):
         """

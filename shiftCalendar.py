@@ -8,6 +8,7 @@ class ShiftBox:
     """
     Represents a single box on a calendar
     """
+
     def __init__(self, shift_calendar, box_num):
         self.shift_calendar = shift_calendar
         self.canvas = self.shift_calendar.canvas
@@ -16,19 +17,27 @@ class ShiftBox:
         self.dims = self.__calculate_box_dims()
         self.text_dims = (
             self.dims[0] + 0.2 * self.shift_calendar.box_width, self.dims[1] + 0.2 * self.shift_calendar.box_height)
+        self.title_dims = (
+            self.dims[0] + 0.5 * self.shift_calendar.box_width, self.dims[1] + 0.5 * self.shift_calendar.box_height)
 
         self.rect = self.canvas.create_rectangle(self.dims)
         self.text = self.canvas.create_text(self.text_dims, text="", state=DISABLED)
+        self.title = self.canvas.create_text(self.title_dims, text="", state=DISABLED)
 
         self.canvas.tag_bind(self.rect, "<Button-1>", func=self.click_handler)
 
-    def draw_active(self, day):
+    def draw_active(self, day, month, year):
         """
-        Draws a day of the month in the box
+        Draws a day of the month in the box. If the day is today, it draws in a different colour
         :param day: Day of the month
+        :param month: Month of the year
+        :param year: Year
         """
-        today = datetime.date.today().day
-        if day == today:
+        today = datetime.date.today()
+        holiday = self.shift_calendar.holiday_manager.get_holiday(day, month, year)
+        if holiday is not None:
+            self.draw_holiday(day, holiday[2], holiday[3])
+        elif day == today.day and month == today.month and year == today.year:
             self.draw_today(day)
         else:
             self.__draw("white", str(day))
@@ -46,13 +55,13 @@ class ShiftBox:
         """
         self.__draw("cyan3", str(day))
 
-    def __draw(self, color, text=None):
-        self.canvas.itemconfig(self.rect, fill=color)
+    def draw_holiday(self, day, title, color):
+        self.__draw(color, day, title)
 
-        if text is not None:
-            self.canvas.itemconfig(self.text, text=text)
-        else:
-            self.canvas.itemconfig(self.text, text="")
+    def __draw(self, color, text="", title=""):
+        self.canvas.itemconfig(self.rect, fill=color)
+        self.canvas.itemconfig(self.text, text=text)
+        self.canvas.itemconfig(self.title, text=title)
 
     def __calculate_box_dims(self):
         x1 = 10 + (self.box_num % self.shift_calendar.columns) * self.shift_calendar.box_width
@@ -78,12 +87,13 @@ class ShiftCalendar:
 
     week_days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
 
-    def __init__(self, root, width, height):
+    def __init__(self, root, width, height, holiday_manager):
+        self.holiday_manager = holiday_manager
         self.root = root
         today = datetime.date.today()
 
         self.month_label = Label(root, text=self.months[today.month] + " " + str(today.year))
-        self.month_label.grid()
+        self.month_label.grid(row=1)
 
         win = Canvas(root, width=width, height=height)
         win.grid(ipadx=10, ipady=10)  # Places canvas on screen
@@ -130,7 +140,7 @@ class ShiftCalendar:
             for day in week:
                 box = self.boxes[box_counter]
                 if day != 0:
-                    box.draw_active(day)
+                    box.draw_active(day, month, year)
                 else:
                     box.draw_inactive()
 
