@@ -9,7 +9,7 @@ import tooltip
 class App:
     def __init__(self):
         today = datetime.date.today()
-        self.holiday_manager = holidayManager.HolidayManager("./holidays.pck", self)
+        self.holiday_manager = holidayManager.HolidayManager("./holidays.ics", self)
 
         self.month = today.month
         self.year = today.year
@@ -192,5 +192,5 @@ class App:
         """
         Gracefully closes the graphical interface, writing holidays to file first
         """
-        self.holiday_manager.write()
+        self.holiday_manager.write_ical()
         self.root.destroy()

@@ -1,4 +1,6 @@
 *.pck
 *.pyc
 *.txt
+!requirements.txt
 *.date
+*.ics

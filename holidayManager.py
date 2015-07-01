@@ -2,6 +2,7 @@ from Tkinter import Toplevel, Label, StringVar, Entry, Button, Frame
 import pickle
 import datetime
 import ttk
+from icalendar import Calendar, Event
 
 
 class HolidayManager:
@@ -12,7 +13,7 @@ class HolidayManager:
         self.app = app
         self.holidays = []
         self.filename = filename
-        self.read()
+        self.read_ical()
 
     def add_holiday(self, start, end, title, colour):
         self.holidays.append([start, end, title, colour])
@@ -33,30 +34,58 @@ class HolidayManager:
         Resets and updates the holidays file
         """
         self.holidays = []
-        self.write()
+        self.write_ical()
+        self.app.update_calendar()
 
-    def read(self):
+    def read_ical(self):
         """
-        Reads in data for holidays using pickle
+        Reads in data for holidays in iCalendar format
         """
-        try:
-            file_handler = open(self.filename, "rb")
-        except IOError:
-            self.reset()
-            file_handler = open(self.filename, "rb")
+        completed = False
 
-        holidays = pickle.load(file_handler)
-        file_handler.close()
+        while not completed:
+            try:
+                with open(self.filename, 'rb') as f:
+                    cal = Calendar.from_ical(f.read())
+                    for component in cal.walk():
+                        if component.name == "VEVENT":
+                            holiday = [component.decoded('dtstart'), component.decoded('dtend'),
+                                       component.decoded('summary')]
 
-        self.holidays = holidays
+                            try:
+                                color = component.decoded('color')
+                                holiday.append(color)
+                            except KeyError:
+                                # TODO: Set a default colour
+                                holiday.append('blue')
 
-    def write(self):
+                            self.holidays.append(holiday)
+                completed = True
+            except IOError:
+                self.reset()
+
+    def write_ical(self):
         """
-        Writes out the holidays to a file
+        Writes out the holidays to a file in the iCalendar format
         """
-        file_handler = open(self.filename, "wb")
-        pickle.dump(self.holidays, file_handler)
-        file_handler.close()
+        cal = Calendar()
+
+        cal.add('prodid', '-//shift-calc//mxm.dk//')
+        cal.add('version', '0.1')
+
+        for index, holiday in enumerate(self.holidays):
+            event = Event()
+            event.add('summary', holiday[2])
+            event.add('uid', index)
+            event.add('dtstart', holiday[0])
+            event.add('dtend', holiday[1])
+            event.add('color', holiday[3])
+            cal.add_component(event)
+
+        with open(self.filename, 'wb') as f:
+            f.write(cal.to_ical())
+
+
 
     def add_holiday_gui(self):
         """
