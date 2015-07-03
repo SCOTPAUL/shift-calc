@@ -8,6 +8,8 @@ import tooltip
 
 class App:
     def __init__(self):
+        self.calendar = None
+
         today = datetime.date.today()
         self.holiday_manager = holidayManager.HolidayManager("./holidays.ics", self)
 

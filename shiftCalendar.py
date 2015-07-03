@@ -36,7 +36,7 @@ class ShiftBox:
         today = datetime.date.today()
         holiday = self.shift_calendar.holiday_manager.get_holiday(day, month, year)
         if holiday is not None:
-            self.draw_holiday(day, holiday[2], holiday[3])
+            self.draw_holiday(day, holiday.name, holiday.color)
         elif day == today.day and month == today.month and year == today.year:
             self.draw_today(day)
         else:

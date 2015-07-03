@@ -1,8 +1,51 @@
 from Tkinter import Toplevel, Label, StringVar, Entry, Button, Frame
-import pickle
 import datetime
 import ttk
 from icalendar import Calendar, Event
+
+
+class Holiday:
+    """
+    Representation of a time in the calendar where the shift patterns don't apply
+    """
+
+    def __init__(self, name, start, end, color):
+        self.name = name
+        self.start = start
+        self.end = end
+        self.color = color
+
+    def get_ical_event(self, index):
+        """
+        :param index The unique id of the event
+        :returns An iCalendar VEVENT representing the holiday
+        """
+        event = Event()
+        event.add('summary', self.name)
+        event.add('uid', index)
+        event.add('dtstart', self.start)
+        event.add('dtend', self.end)
+        event.add('color', self.color)
+        return event
+
+    @classmethod
+    def event_from_ical(cls, ical_event):
+        """
+        :param ical_event An iCalendar formatted event as a string
+        :returns A Holiday instance representing the ical_event
+        """
+
+        name = ical_event.decoded('summary')
+        start = ical_event.decoded('dtstart')
+        end = ical_event.decoded('dtend')
+
+        try:
+            color = ical_event.decoded('color')
+        except KeyError:
+            # TODO: Set a default colour
+            color = 'blue'
+
+        return cls(name=name, color=color, start=start, end=end)
 
 
 class HolidayManager:
@@ -16,7 +59,7 @@ class HolidayManager:
         self.read_ical()
 
     def add_holiday(self, start, end, title, colour):
-        self.holidays.append([start, end, title, colour])
+        self.holidays.append(Holiday(start=start, end=end, name=title, color=colour))
 
     def get_holiday(self, day, month, year):
         """
@@ -24,7 +67,7 @@ class HolidayManager:
         """
         current_date = datetime.date(year, month, day)
         for holiday in self.holidays:
-            if holiday[0] <= current_date <= holiday[1]:
+            if holiday.start <= current_date <= holiday.end:
                 return holiday
 
         return None
@@ -35,7 +78,9 @@ class HolidayManager:
         """
         self.holidays = []
         self.write_ical()
-        self.app.update_calendar()
+
+        if self.app.calendar:
+            self.app.update_calendar()
 
     def read_ical(self):
         """
@@ -46,19 +91,11 @@ class HolidayManager:
         while not completed:
             try:
                 with open(self.filename, 'rb') as f:
-                    cal = Calendar.from_ical(f.read())
+                    ical_str = f.read()
+                    cal = Calendar.from_ical(ical_str)
                     for component in cal.walk():
                         if component.name == "VEVENT":
-                            holiday = [component.decoded('dtstart'), component.decoded('dtend'),
-                                       component.decoded('summary')]
-
-                            try:
-                                color = component.decoded('color')
-                                holiday.append(color)
-                            except KeyError:
-                                # TODO: Set a default colour
-                                holiday.append('blue')
-
+                            holiday = Holiday.event_from_ical(component)
                             self.holidays.append(holiday)
                 completed = True
             except IOError:
@@ -74,18 +111,11 @@ class HolidayManager:
         cal.add('version', '0.1')
 
         for index, holiday in enumerate(self.holidays):
-            event = Event()
-            event.add('summary', holiday[2])
-            event.add('uid', index)
-            event.add('dtstart', holiday[0])
-            event.add('dtend', holiday[1])
-            event.add('color', holiday[3])
+            event = holiday.get_ical_event(index)
             cal.add_component(event)
 
         with open(self.filename, 'wb') as f:
             f.write(cal.to_ical())
-
-
 
     def add_holiday_gui(self):
         """
