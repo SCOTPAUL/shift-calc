@@ -3,7 +3,7 @@ shift-calc
 
 Basic calendar with ability to add holidays.
 
-![Screenshot](https://raw.github.com/SCOTPAUL/shift-calc/ical/screenshot.png)
+![Screenshot](https://raw.github.com/SCOTPAUL/shift-calc/master/screenshot.png)
 
 ## Building
 
