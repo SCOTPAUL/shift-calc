@@ -161,12 +161,12 @@ class ShiftCalendar:
         try:
             date = self.get_date_from_box_number(box_num)
             self.holiday_manager.add_holiday_gui(date)
-        except ValueError:
+        except (ValueError, IndexError):
             pass
 
     def get_date_from_box_number(self, box_num):
         """
-        Takes a box_number and returns the date it currently represents
+        Takes a box number and returns the date it currently represents
         :param box_num: The number of a ShiftBox
         :return: Date in datetime.date format
         """
