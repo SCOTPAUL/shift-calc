@@ -13,9 +13,6 @@ class App:
         today = datetime.date.today()
         self.holiday_manager = holidayManager.HolidayManager("./holidays.ics", self)
 
-        self.month = today.month
-        self.year = today.year
-
         self.__setup_calendar()
         self.__setup_instructions()
         self.__setup_menus()
@@ -72,7 +69,7 @@ class App:
 
         can_width = 600
         can_height = 528
-        self.calendar = shiftCalendar.ShiftCalendar(self.root, can_width, can_height, self.holiday_manager)
+        self.calendar = shiftCalendar.ShiftCalendar(self.root, can_width, can_height, self)
 
     def __setup_bindings(self):
         self.root.bind("<Right>", self.change_month)
@@ -125,8 +122,8 @@ class App:
                 year = int(y_entry.get())
 
                 if 0 < month <= 12 and 1970 <= year < 5000:
-                    self.month = month - 1
-                    self.year = year
+                    self.calendar.month = month - 1
+                    self.calendar.year = year
                     self.update_calendar()
             except:
                 pass
@@ -139,17 +136,17 @@ class App:
         Changes the month/year variable when Right or Left keys are pressed, then draws new calendar for that month
         """
         if event.keysym == "Right":
-            if self.month < 12:
-                self.month += 1
+            if self.calendar.month < 12:
+                self.calendar.month += 1
             else:
-                self.year += 1
-                self.month = 1
+                self.calendar.year += 1
+                self.calendar.month = 1
         elif event.keysym == "Left":
-            if self.month > 1:
-                self.month -= 1
-            elif self.year > 1970:
-                self.year -= 1
-                self.month = 12
+            if self.calendar.month > 1:
+                self.calendar.month -= 1
+            elif self.calendar.year > 1970:
+                self.calendar.year -= 1
+                self.calendar.month = 12
 
         self.update_calendar()
 
@@ -158,11 +155,11 @@ class App:
         Changes the year variable when Up or Down keys pressed, then draws the calendar for that month
         """
         if event.keysym == "Up":
-            self.year += 1
+            self.calendar.year += 1
 
         elif event.keysym == "Down":
-            if self.year > 1970:
-                self.year -= 1
+            if self.calendar.year > 1970:
+                self.calendar.year -= 1
 
         self.update_calendar()
 
@@ -172,16 +169,16 @@ class App:
         """
         today = datetime.date.today()
 
-        self.year = today.year
-        self.month = today.month
+        self.calendar.year = today.year
+        self.calendar.month = today.month
 
         self.update_calendar()
 
     def update_calendar(self):
         """
-        Draws the calendar at self.month and self.year
+        Draws the calendar at self.calendar.month and self.calendar.year
         """
-        self.calendar.draw_month(self.month, self.year)
+        self.calendar.draw_month(self.calendar.month, self.calendar.year)
 
     def start(self):
         """

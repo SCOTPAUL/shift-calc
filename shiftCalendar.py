@@ -71,11 +71,14 @@ class ShiftBox:
         return x1, y1, x2, y2
 
     def click_handler(self, event):
-        if self.canvas.find_withtag(self.rect):
-            self.canvas.itemconfig(self.rect, fill="blue")
-            self.canvas.update_idletasks()
-            self.canvas.after(200)
-            self.canvas.itemconfig(self.rect, fill="red")
+        current_color = self.canvas.itemcget(self.rect, 'fill')
+
+        self.canvas.itemconfig(self.rect, fill="blue")
+        self.canvas.update_idletasks()
+        self.canvas.after(100)
+        self.canvas.itemconfig(self.rect, fill=current_color)
+
+        self.shift_calendar.click_handler(self.box_num)
 
 
 class ShiftCalendar:
@@ -87,10 +90,13 @@ class ShiftCalendar:
 
     week_days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
 
-    def __init__(self, root, width, height, holiday_manager):
-        self.holiday_manager = holiday_manager
+    def __init__(self, root, width, height, app):
+        self.holiday_manager = app.holiday_manager
         self.root = root
         today = datetime.date.today()
+
+        self.month = today.month
+        self.year = today.year
 
         self.month_label = Label(root, text=self.months[today.month] + " " + str(today.year))
         self.month_label.grid(row=1)
@@ -150,3 +156,20 @@ class ShiftCalendar:
             box = self.boxes[box_counter]
             box.draw_inactive()
             box_counter += 1
+
+    def click_handler(self, box_num):
+        try:
+            date = self.get_date_from_box_number(box_num)
+            self.holiday_manager.add_holiday_gui(date)
+        except ValueError:
+            pass
+
+    def get_date_from_box_number(self, box_num):
+        """
+        Takes a box_number and returns the date it currently represents
+        :param box_num: The number of a ShiftBox
+        :return: Date in datetime.date format
+        """
+        week, day_in_week = divmod(box_num, 7)
+        day = self.calendar.monthdayscalendar(self.year, self.month)[week][day_in_week]
+        return datetime.date(self.year, self.month, day)

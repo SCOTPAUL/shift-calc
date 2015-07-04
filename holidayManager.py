@@ -52,6 +52,7 @@ class HolidayManager:
     """
     Manages the holidays associated with the calendar
     """
+
     def __init__(self, filename, app):
         self.app = app
         self.holidays = []
@@ -63,7 +64,7 @@ class HolidayManager:
 
     def get_holiday(self, day, month, year):
         """
-        :returns Holiday if parameters occur during it, else returns None
+        :return: Holiday if parameters occur during it, else returns None
         """
         current_date = datetime.date(year, month, day)
         for holiday in self.holidays:
@@ -117,10 +118,11 @@ class HolidayManager:
         with open(self.filename, 'wb') as f:
             f.write(cal.to_ical())
 
-    def add_holiday_gui(self):
+    def add_holiday_gui(self, date=None):
         """
         Opens window for adding new holidays to the holiday file
-        :param app: The main application class
+        :param date: If provided, the start/end date fields are prepopulated with this date, else with dd/mm/yyyy
+        placeholders
         """
 
         # Create a new window
@@ -144,7 +146,11 @@ class HolidayManager:
         # Start date entry box
         s_string = StringVar()
         s_entry = Entry(new_hol_top, textvariable=s_string)
-        s_entry.insert(0, "dd/mm/yyyy")
+
+        if date is not None:
+            s_entry.insert(0, str(date.day) + "/" + str(date.month) + "/" + str(date.year))
+        else:
+            s_entry.insert(0, "dd/mm/yyyy")
         s_entry.grid(row=1, column=2)
 
         # End date label
@@ -154,7 +160,11 @@ class HolidayManager:
         # End date entry box
         e_string = StringVar()
         e_entry = Entry(new_hol_top, textvariable=e_string)
-        e_entry.insert(0, "dd/mm/yyyy")
+
+        if date is not None:
+            e_entry.insert(0, str(date.day) + "/" + str(date.month) + "/" + str(date.year))
+        else:
+            e_entry.insert(0, "dd/mm/yyyy")
         e_entry.grid(row=2, column=2)
 
         # Colour label
